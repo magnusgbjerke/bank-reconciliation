@@ -1,8 +1,8 @@
 import React from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Toaster } from "react-hot-toast";
-import ReconciliationPage from "./components/reconciliation/ReconciliationPage.tsx";
-import Layout from "./components/layout/Layout.tsx";
+import ReconciliationPage from "./components/reconciliation/ReconciliationPage";
+import Layout from "./components/layout/Layout";
 import "./index.css";
 
 const queryClient = new QueryClient({
