@@ -64,13 +64,6 @@ const ReconciliationPage: React.FC = () => {
       middleBoxRef.current
     ) {
       const middleBox = middleBoxRef.current.getBoundingClientRect();
-      const gridContainer = document.querySelector(
-        "#reconciliation-grid"
-      ) as HTMLElement;
-
-      if (!gridContainer) return;
-
-      const containerRect = gridContainer.getBoundingClientRect();
       const newLines: Array<{
         id: string;
         startX: number;
@@ -87,10 +80,10 @@ const ReconciliationPage: React.FC = () => {
           const rect = element.getBoundingClientRect();
           const line = {
             id: `bank-${transaction.id}`,
-            startX: rect.right - containerRect.left,
-            startY: rect.top + rect.height / 2 - containerRect.top,
-            endX: middleBox.left - containerRect.left,
-            endY: middleBox.top + middleBox.height / 2 - containerRect.top,
+            startX: rect.right,
+            startY: rect.top + rect.height / 2,
+            endX: middleBox.left,
+            endY: middleBox.top + middleBox.height / 2,
             type: "bank" as const,
           };
           console.log(`Bank line for transaction ${transaction.id}:`, line);
@@ -105,10 +98,10 @@ const ReconciliationPage: React.FC = () => {
           const rect = element.getBoundingClientRect();
           const line = {
             id: `book-${transaction.id}`,
-            startX: rect.left - containerRect.left,
-            startY: rect.top + rect.height / 2 - containerRect.top,
-            endX: middleBox.right - containerRect.left,
-            endY: middleBox.top + middleBox.height / 2 - containerRect.top,
+            startX: rect.left,
+            startY: rect.top + rect.height / 2,
+            endX: middleBox.right,
+            endY: middleBox.top + middleBox.height / 2,
             type: "book" as const,
           };
           console.log(`Book line for transaction ${transaction.id}:`, line);
@@ -128,21 +121,21 @@ const ReconciliationPage: React.FC = () => {
     calculateConnectionLines();
   }, [selectedBankTransactions, selectedBookTransactions]);
 
-  // Recalculate lines on window resize
+  // Recalculate lines on window resize and scroll
   useEffect(() => {
-    let resizeTimeout: NodeJS.Timeout;
-
     const handleResize = () => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(() => {
-        calculateConnectionLines();
-      }, 100); // Debounce resize events
+      calculateConnectionLines();
+    };
+
+    const handleScroll = () => {
+      calculateConnectionLines();
     };
 
     window.addEventListener("resize", handleResize);
+    window.addEventListener("scroll", handleScroll);
     return () => {
       window.removeEventListener("resize", handleResize);
-      clearTimeout(resizeTimeout);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, [selectedBankTransactions, selectedBookTransactions]);
 
@@ -455,8 +448,8 @@ const ReconciliationPage: React.FC = () => {
         >
           {/* Dynamic Connection Lines */}
           <svg
-            className="absolute inset-0 pointer-events-none z-10 hidden lg:block"
-            style={{ width: "100%", height: "100%" }}
+            className="fixed inset-0 pointer-events-none z-10 hidden lg:block"
+            style={{ width: "100vw", height: "100vh" }}
           >
             {connectionLines.map((line) => {
               // Create zigzag path with curves for more interesting visual
