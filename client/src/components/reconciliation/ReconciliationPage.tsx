@@ -369,7 +369,7 @@ const ReconciliationPage: React.FC = () => {
   };
 
   return (
-    <div className="p-6">
+    <>
       {/* Account Selector */}
       <div className="mb-6">
         <label
@@ -768,7 +768,7 @@ const ReconciliationPage: React.FC = () => {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
