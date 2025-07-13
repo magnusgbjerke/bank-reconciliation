@@ -13,6 +13,7 @@
     "fix-deps": "node fix-dependencies.js",
     "setup": "node setup.js",
     "setup-db": "node scripts/setup-database.js",
+    "populate-mock": "node server/scripts/populateMockData.js",
     "stop-node": "taskkill /f /im node.exe"
   },
   "dependencies": {
