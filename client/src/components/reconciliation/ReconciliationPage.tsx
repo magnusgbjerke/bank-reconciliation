@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { toast } from "react-hot-toast";
 
 interface Transaction {
@@ -41,6 +41,110 @@ const ReconciliationPage: React.FC = () => {
   const [selectedBookTransactions, setSelectedBookTransactions] = useState<
     Transaction[]
   >([]);
+
+  // Refs for dynamic line positioning
+  const transactionRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
+  const middleBoxRef = useRef<HTMLDivElement | null>(null);
+  const [connectionLines, setConnectionLines] = useState<
+    Array<{
+      id: string;
+      startX: number;
+      startY: number;
+      endX: number;
+      endY: number;
+      type: "bank" | "book";
+    }>
+  >([]);
+
+  // Calculate connection lines when selections change
+  const calculateConnectionLines = () => {
+    if (
+      selectedBankTransactions.length > 0 &&
+      selectedBookTransactions.length > 0 &&
+      middleBoxRef.current
+    ) {
+      const middleBox = middleBoxRef.current.getBoundingClientRect();
+      const gridContainer = document.querySelector(
+        "#reconciliation-grid"
+      ) as HTMLElement;
+
+      if (!gridContainer) return;
+
+      const containerRect = gridContainer.getBoundingClientRect();
+      const newLines: Array<{
+        id: string;
+        startX: number;
+        startY: number;
+        endX: number;
+        endY: number;
+        type: "bank" | "book";
+      }> = [];
+
+      // Calculate lines for bank transactions
+      selectedBankTransactions.forEach((transaction) => {
+        const element = transactionRefs.current[transaction.id];
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          const line = {
+            id: `bank-${transaction.id}`,
+            startX: rect.right - containerRect.left,
+            startY: rect.top + rect.height / 2 - containerRect.top,
+            endX: middleBox.left - containerRect.left,
+            endY: middleBox.top + middleBox.height / 2 - containerRect.top,
+            type: "bank" as const,
+          };
+          console.log(`Bank line for transaction ${transaction.id}:`, line);
+          newLines.push(line);
+        }
+      });
+
+      // Calculate lines for book transactions
+      selectedBookTransactions.forEach((transaction) => {
+        const element = transactionRefs.current[transaction.id];
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          const line = {
+            id: `book-${transaction.id}`,
+            startX: rect.left - containerRect.left,
+            startY: rect.top + rect.height / 2 - containerRect.top,
+            endX: middleBox.right - containerRect.left,
+            endY: middleBox.top + middleBox.height / 2 - containerRect.top,
+            type: "book" as const,
+          };
+          console.log(`Book line for transaction ${transaction.id}:`, line);
+          newLines.push(line);
+        }
+      });
+
+      console.log("Connection lines calculated:", newLines);
+      setConnectionLines(newLines);
+    } else {
+      setConnectionLines([]);
+    }
+  };
+
+  // Calculate connection lines when selections change
+  useEffect(() => {
+    calculateConnectionLines();
+  }, [selectedBankTransactions, selectedBookTransactions]);
+
+  // Recalculate lines on window resize
+  useEffect(() => {
+    let resizeTimeout: NodeJS.Timeout;
+
+    const handleResize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        calculateConnectionLines();
+      }, 100); // Debounce resize events
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      clearTimeout(resizeTimeout);
+    };
+  }, [selectedBankTransactions, selectedBookTransactions]);
 
   // Fetch accounts on component mount
   useEffect(() => {
@@ -345,9 +449,80 @@ const ReconciliationPage: React.FC = () => {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div
+          className="grid grid-cols-1 lg:grid-cols-3 gap-6 relative"
+          id="reconciliation-grid"
+        >
+          {/* Dynamic Connection Lines */}
+          <svg
+            className="absolute inset-0 pointer-events-none z-10 hidden lg:block"
+            style={{ width: "100%", height: "100%" }}
+          >
+            {connectionLines.map((line) => {
+              // Create zigzag path with curves for more interesting visual
+              const isBank = line.type === "bank";
+              const midX = (line.startX + line.endX) / 2;
+              const midY = (line.startY + line.endY) / 2;
+
+              // Create different paths for bank vs book transactions
+              let pathData;
+              if (isBank) {
+                // Bank transactions flow from left to right
+                pathData = `
+                  M ${line.startX} ${line.startY}
+                  L ${midX - 30} ${line.startY}
+                  Q ${midX - 15} ${line.startY} ${midX} ${midY}
+                  Q ${midX + 15} ${line.endY} ${midX + 30} ${line.endY}
+                  L ${line.endX} ${line.endY}
+                `;
+              } else {
+                // Book transactions flow from right to left
+                pathData = `
+                  M ${line.startX} ${line.startY}
+                  L ${midX + 30} ${line.startY}
+                  Q ${midX + 15} ${line.startY} ${midX} ${midY}
+                  Q ${midX - 15} ${line.endY} ${midX - 30} ${line.endY}
+                  L ${line.endX} ${line.endY}
+                `;
+              }
+
+              return (
+                <path
+                  key={line.id}
+                  d={pathData}
+                  stroke={line.type === "bank" ? "#3b82f6" : "#10b981"}
+                  strokeWidth="3"
+                  strokeDasharray="12,8"
+                  opacity="0.8"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <animate
+                    attributeName="stroke-dashoffset"
+                    values="0;-20"
+                    dur="1.5s"
+                    repeatCount="indefinite"
+                  />
+                  <animate
+                    attributeName="opacity"
+                    values="0.8;0.4;0.8"
+                    dur="2s"
+                    repeatCount="indefinite"
+                  />
+                  <animate
+                    attributeName="stroke-width"
+                    values="3;4;3"
+                    dur="1s"
+                    repeatCount="indefinite"
+                  />
+                </path>
+              );
+            })}
+          </svg>
+
           {/* Bank Statements - Left Side */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 relative">
             <div className="px-6 py-4 border-b border-gray-200">
               <h2 className="text-xl font-semibold text-gray-900">
                 Bank Statements
@@ -366,6 +541,9 @@ const ReconciliationPage: React.FC = () => {
                   {bankTransactions.map((transaction) => (
                     <div
                       key={transaction.id}
+                      ref={(el) => {
+                        transactionRefs.current[transaction.id] = el;
+                      }}
                       className={getBankTransactionClasses(transaction)}
                       onClick={() => handleSelectBankTransaction(transaction)}
                     >
@@ -404,8 +582,132 @@ const ReconciliationPage: React.FC = () => {
             </div>
           </div>
 
+          {/* Middle Match Status Box */}
+          <div className="hidden lg:flex flex-col items-center justify-center">
+            <div
+              ref={middleBoxRef}
+              className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 min-w-[200px]"
+            >
+              {selectedBankTransactions.length > 0 &&
+              selectedBookTransactions.length > 0 ? (
+                (() => {
+                  const bankTotal = selectedBankTransactions.reduce(
+                    (sum, trans) => {
+                      const numericAmount =
+                        typeof trans.amount === "string"
+                          ? parseFloat(trans.amount)
+                          : trans.amount;
+                      const amount =
+                        trans.transaction_type === "credit"
+                          ? numericAmount
+                          : -numericAmount;
+                      return sum + amount;
+                    },
+                    0
+                  );
+                  const bookTotal = selectedBookTransactions.reduce(
+                    (sum, trans) => {
+                      const numericAmount =
+                        typeof trans.amount === "string"
+                          ? parseFloat(trans.amount)
+                          : trans.amount;
+                      const amount =
+                        trans.transaction_type === "credit"
+                          ? numericAmount
+                          : -numericAmount;
+                      return sum + amount;
+                    },
+                    0
+                  );
+                  const canMatch = bankTotal === bookTotal;
+                  return (
+                    <div className="text-center">
+                      <div
+                        className={`flex items-center justify-center w-16 h-16 rounded-full shadow text-3xl border-4 mx-auto mb-4 ${
+                          canMatch
+                            ? "bg-green-100 border-green-400 text-green-600"
+                            : "bg-red-100 border-red-400 text-red-600"
+                        }`}
+                      >
+                        {canMatch ? (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-8 w-8"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                        ) : (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-8 w-8"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M6 18L18 6M6 6l12 12"
+                            />
+                          </svg>
+                        )}
+                      </div>
+                      <div
+                        className={`text-lg font-semibold mb-2 ${
+                          canMatch ? "text-green-700" : "text-red-700"
+                        }`}
+                      >
+                        {canMatch ? "Ready to Match" : "Amounts Don't Match"}
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        {selectedBankTransactions.length} bank +{" "}
+                        {selectedBookTransactions.length} book
+                      </div>
+                    </div>
+                  );
+                })()
+              ) : (
+                <div className="text-center">
+                  <div className="flex items-center justify-center w-16 h-16 rounded-full shadow text-3xl border-4 mx-auto mb-4 bg-gray-100 border-gray-300 text-gray-400">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-8 w-8"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        fill="none"
+                      />
+                    </svg>
+                  </div>
+                  <div className="text-lg font-semibold mb-2 text-gray-600">
+                    Select from both sides
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    Choose transactions to match
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Your Records - Right Side */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 relative">
             <div className="px-6 py-4 border-b border-gray-200">
               <h2 className="text-xl font-semibold text-gray-900">
                 Your Records
@@ -424,6 +726,9 @@ const ReconciliationPage: React.FC = () => {
                   {bookTransactions.map((transaction) => (
                     <div
                       key={transaction.id}
+                      ref={(el) => {
+                        transactionRefs.current[transaction.id] = el;
+                      }}
                       className={getBookTransactionClasses(transaction)}
                       onClick={() => handleSelectBookTransaction(transaction)}
                     >
