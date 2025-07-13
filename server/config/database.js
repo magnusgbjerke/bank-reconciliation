@@ -50,6 +50,7 @@ const initializeDatabase = async () => {
         transaction_type VARCHAR(20) CHECK (transaction_type IN ('credit', 'debit')),
         reference_number VARCHAR(100),
         category VARCHAR(100),
+        source VARCHAR(20) DEFAULT 'book' CHECK (source IN ('bank', 'book')),
         is_reconciled BOOLEAN DEFAULT false,
         reconciliation_id INTEGER,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

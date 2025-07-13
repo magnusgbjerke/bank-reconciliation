@@ -1,7 +1,7 @@
 import React from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Toaster } from "react-hot-toast";
-import Dashboard from "./components/dashboard/Dashboard.tsx";
+import ReconciliationPage from "./components/reconciliation/ReconciliationPage.tsx";
 import Layout from "./components/layout/Layout.tsx";
 import "./index.css";
 
@@ -19,7 +19,7 @@ const App: React.FC = () => {
     <QueryClientProvider client={queryClient}>
       <div className="min-h-screen bg-gray-50">
         <Layout>
-          <Dashboard />
+          <ReconciliationPage />
         </Layout>
 
         <Toaster

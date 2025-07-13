@@ -31,7 +31,7 @@ const mockData = {
   bankStatements: [
     // Main Business Checking - Bank Statement
     {
-      account_id: 1,
+      account_number: "1234567890",
       transactions: [
         {
           transaction_date: "2024-01-15",
@@ -40,6 +40,7 @@ const mockData = {
           transaction_type: "credit",
           reference_number: "DEP001234",
           category: "Customer Payment",
+          source: "bank",
           is_reconciled: false,
         },
         {
@@ -49,6 +50,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "ATM567890",
           category: "ATM Withdrawal",
+          source: "bank",
           is_reconciled: false,
         },
         {
@@ -58,6 +60,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "CHK1001",
           category: "Office Supplies",
+          source: "bank",
           is_reconciled: false,
         },
         {
@@ -67,6 +70,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "TRF789012",
           category: "Transfer",
+          source: "bank",
           is_reconciled: false,
         },
         {
@@ -76,6 +80,7 @@ const mockData = {
           transaction_type: "credit",
           reference_number: "DEP345678",
           category: "Client Payment",
+          source: "bank",
           is_reconciled: false,
         },
         {
@@ -85,6 +90,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "DEB901234",
           category: "Fuel",
+          source: "bank",
           is_reconciled: false,
         },
         {
@@ -94,6 +100,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "CHK1002",
           category: "Rent",
+          source: "bank",
           is_reconciled: false,
         },
         {
@@ -103,6 +110,7 @@ const mockData = {
           transaction_type: "credit",
           reference_number: "DEP567890",
           category: "Consulting",
+          source: "bank",
           is_reconciled: false,
         },
         {
@@ -112,6 +120,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "DEB123456",
           category: "Meals & Entertainment",
+          source: "bank",
           is_reconciled: false,
         },
         {
@@ -121,6 +130,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "CHK1003",
           category: "Utilities",
+          source: "bank",
           is_reconciled: false,
         },
       ],
@@ -128,7 +138,7 @@ const mockData = {
 
     // Business Savings Account - Bank Statement
     {
-      account_id: 2,
+      account_number: "0987654321",
       transactions: [
         {
           transaction_date: "2024-01-18",
@@ -137,6 +147,7 @@ const mockData = {
           transaction_type: "credit",
           reference_number: "TRF789012",
           category: "Transfer",
+          source: "bank",
           is_reconciled: false,
         },
         {
@@ -146,6 +157,7 @@ const mockData = {
           transaction_type: "credit",
           reference_number: "INT001",
           category: "Interest",
+          source: "bank",
           is_reconciled: false,
         },
       ],
@@ -153,7 +165,7 @@ const mockData = {
 
     // Credit Card Account - Bank Statement
     {
-      account_id: 3,
+      account_number: "5555666677778888",
       transactions: [
         {
           transaction_date: "2024-01-15",
@@ -162,6 +174,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "PUR001",
           category: "Office Supplies",
+          source: "bank",
           is_reconciled: false,
         },
         {
@@ -171,6 +184,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "PUR002",
           category: "Fuel",
+          source: "bank",
           is_reconciled: false,
         },
         {
@@ -180,6 +194,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "PUR003",
           category: "Meals & Entertainment",
+          source: "bank",
           is_reconciled: false,
         },
         {
@@ -189,6 +204,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "PUR004",
           category: "Travel",
+          source: "bank",
           is_reconciled: false,
         },
         {
@@ -198,6 +214,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "PUR005",
           category: "Software",
+          source: "bank",
           is_reconciled: false,
         },
         {
@@ -207,6 +224,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "PUR006",
           category: "Equipment",
+          source: "bank",
           is_reconciled: false,
         },
         {
@@ -216,6 +234,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "PUR007",
           category: "Marketing",
+          source: "bank",
           is_reconciled: false,
         },
         {
@@ -225,6 +244,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "PUR008",
           category: "Meals & Entertainment",
+          source: "bank",
           is_reconciled: false,
         },
         {
@@ -234,6 +254,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "PUR009",
           category: "Transportation",
+          source: "bank",
           is_reconciled: false,
         },
         {
@@ -243,6 +264,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "PUR010",
           category: "Services",
+          source: "bank",
           is_reconciled: false,
         },
       ],
@@ -253,7 +275,7 @@ const mockData = {
   yourRecords: [
     // Main Business Checking - Your Records
     {
-      account_id: 1,
+      account_number: "1234567890",
       transactions: [
         {
           transaction_date: "2024-01-15",
@@ -262,6 +284,7 @@ const mockData = {
           transaction_type: "credit",
           reference_number: "INV-001",
           category: "Customer Payment",
+          source: "book",
           is_reconciled: false,
         },
         {
@@ -271,6 +294,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "ATM-001",
           category: "ATM Withdrawal",
+          source: "book",
           is_reconciled: false,
         },
         {
@@ -280,6 +304,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "EXP-001",
           category: "Office Supplies",
+          source: "book",
           is_reconciled: false,
         },
         {
@@ -289,6 +314,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "TRF-001",
           category: "Transfer",
+          source: "book",
           is_reconciled: false,
         },
         {
@@ -298,6 +324,7 @@ const mockData = {
           transaction_type: "credit",
           reference_number: "INV-002",
           category: "Client Payment",
+          source: "book",
           is_reconciled: false,
         },
         {
@@ -307,6 +334,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "EXP-002",
           category: "Fuel",
+          source: "book",
           is_reconciled: false,
         },
         {
@@ -316,6 +344,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "EXP-003",
           category: "Rent",
+          source: "book",
           is_reconciled: false,
         },
         {
@@ -325,6 +354,7 @@ const mockData = {
           transaction_type: "credit",
           reference_number: "INV-003",
           category: "Consulting",
+          source: "book",
           is_reconciled: false,
         },
         {
@@ -334,6 +364,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "EXP-004",
           category: "Meals & Entertainment",
+          source: "book",
           is_reconciled: false,
         },
         {
@@ -343,6 +374,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "EXP-005",
           category: "Utilities",
+          source: "book",
           is_reconciled: false,
         },
       ],
@@ -350,7 +382,7 @@ const mockData = {
 
     // Business Savings Account - Your Records
     {
-      account_id: 2,
+      account_number: "0987654321",
       transactions: [
         {
           transaction_date: "2024-01-18",
@@ -359,6 +391,7 @@ const mockData = {
           transaction_type: "credit",
           reference_number: "TRF-001",
           category: "Transfer",
+          source: "book",
           is_reconciled: false,
         },
         {
@@ -368,6 +401,7 @@ const mockData = {
           transaction_type: "credit",
           reference_number: "INT-001",
           category: "Interest",
+          source: "book",
           is_reconciled: false,
         },
       ],
@@ -375,7 +409,7 @@ const mockData = {
 
     // Credit Card Account - Your Records
     {
-      account_id: 3,
+      account_number: "5555666677778888",
       transactions: [
         {
           transaction_date: "2024-01-15",
@@ -384,6 +418,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "CC-EXP-001",
           category: "Office Supplies",
+          source: "book",
           is_reconciled: false,
         },
         {
@@ -393,6 +428,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "CC-EXP-002",
           category: "Fuel",
+          source: "book",
           is_reconciled: false,
         },
         {
@@ -402,6 +438,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "CC-EXP-003",
           category: "Meals & Entertainment",
+          source: "book",
           is_reconciled: false,
         },
         {
@@ -411,6 +448,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "CC-EXP-004",
           category: "Travel",
+          source: "book",
           is_reconciled: false,
         },
         {
@@ -420,6 +458,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "CC-EXP-005",
           category: "Software",
+          source: "book",
           is_reconciled: false,
         },
         {
@@ -429,6 +468,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "CC-EXP-006",
           category: "Equipment",
+          source: "book",
           is_reconciled: false,
         },
         {
@@ -438,6 +478,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "CC-EXP-007",
           category: "Marketing",
+          source: "book",
           is_reconciled: false,
         },
         {
@@ -447,6 +488,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "CC-EXP-008",
           category: "Meals & Entertainment",
+          source: "book",
           is_reconciled: false,
         },
         {
@@ -456,6 +498,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "CC-EXP-009",
           category: "Transportation",
+          source: "book",
           is_reconciled: false,
         },
         {
@@ -465,6 +508,7 @@ const mockData = {
           transaction_type: "debit",
           reference_number: "CC-EXP-010",
           category: "Services",
+          source: "book",
           is_reconciled: false,
         },
       ],
@@ -474,7 +518,7 @@ const mockData = {
   // Sample reconciliation records
   reconciliationRecords: [
     {
-      account_id: 1,
+      account_number: "1234567890",
       reconciliation_date: "2024-01-31",
       starting_balance: 10000.0,
       ending_balance: 15420.75,
@@ -482,7 +526,7 @@ const mockData = {
       notes: "Monthly reconciliation for January 2024",
     },
     {
-      account_id: 2,
+      account_number: "0987654321",
       reconciliation_date: "2024-01-31",
       starting_balance: 24000.0,
       ending_balance: 25012.5,
@@ -490,7 +534,7 @@ const mockData = {
       notes: "Monthly reconciliation for January 2024",
     },
     {
-      account_id: 3,
+      account_number: "5555666677778888",
       reconciliation_date: "2024-01-31",
       starting_balance: 0.0,
       ending_balance: -1250.5,

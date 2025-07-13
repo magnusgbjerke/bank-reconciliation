@@ -12,8 +12,10 @@ const populateMockData = async () => {
     await db.query("DELETE FROM transactions");
     await db.query("DELETE FROM accounts");
 
-    // Insert accounts
+    // Insert accounts and store their IDs
     console.log("📊 Creating accounts...");
+    const accountIdMap = new Map();
+
     for (const account of mockData.accounts) {
       const result = await db.query(
         `INSERT INTO accounts (name, account_number, account_type, balance, currency, is_active) 
@@ -27,70 +29,111 @@ const populateMockData = async () => {
           account.is_active,
         ]
       );
-      console.log(
-        `✅ Created account: ${account.name} (ID: ${result.rows[0].id})`
-      );
+      const accountId = result.rows[0].id;
+      accountIdMap.set(account.name, accountId);
+      console.log(`✅ Created account: ${account.name} (ID: ${accountId})`);
     }
 
     // Insert bank statement transactions
     console.log("🏦 Creating bank statement transactions...");
     for (const bankStatement of mockData.bankStatements) {
+      // Find the corresponding account by name
+      const accountName = mockData.accounts.find(
+        (acc) => acc.account_number === bankStatement.account_number
+      )?.name;
+      const accountId = accountIdMap.get(accountName);
+
+      if (!accountId) {
+        console.warn(
+          `⚠️  Account not found for bank statement: ${bankStatement.account_id}`
+        );
+        continue;
+      }
+
       for (const transaction of bankStatement.transactions) {
         await db.query(
           `INSERT INTO transactions 
-           (account_id, transaction_date, description, amount, transaction_type, reference_number, category, is_reconciled) 
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+           (account_id, transaction_date, description, amount, transaction_type, reference_number, category, source, is_reconciled) 
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
           [
-            bankStatement.account_id,
+            accountId,
             transaction.transaction_date,
             transaction.description,
             transaction.amount,
             transaction.transaction_type,
             transaction.reference_number,
             transaction.category,
+            transaction.source,
             transaction.is_reconciled,
           ]
         );
       }
       console.log(
-        `✅ Added ${bankStatement.transactions.length} bank transactions for account ${bankStatement.account_id}`
+        `✅ Added ${bankStatement.transactions.length} bank transactions for account ${accountName}`
       );
     }
 
     // Insert your records (book transactions)
     console.log("📚 Creating your book transactions...");
     for (const yourRecord of mockData.yourRecords) {
+      // Find the corresponding account by name
+      const accountName = mockData.accounts.find(
+        (acc) => acc.account_number === yourRecord.account_number
+      )?.name;
+      const accountId = accountIdMap.get(accountName);
+
+      if (!accountId) {
+        console.warn(
+          `⚠️  Account not found for book record: ${yourRecord.account_id}`
+        );
+        continue;
+      }
+
       for (const transaction of yourRecord.transactions) {
         await db.query(
           `INSERT INTO transactions 
-           (account_id, transaction_date, description, amount, transaction_type, reference_number, category, is_reconciled) 
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+           (account_id, transaction_date, description, amount, transaction_type, reference_number, category, source, is_reconciled) 
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
           [
-            yourRecord.account_id,
+            accountId,
             transaction.transaction_date,
             transaction.description,
             transaction.amount,
             transaction.transaction_type,
             transaction.reference_number,
             transaction.category,
+            transaction.source,
             transaction.is_reconciled,
           ]
         );
       }
       console.log(
-        `✅ Added ${yourRecord.transactions.length} book transactions for account ${yourRecord.account_id}`
+        `✅ Added ${yourRecord.transactions.length} book transactions for account ${accountName}`
       );
     }
 
     // Insert reconciliation records
     console.log("📋 Creating reconciliation records...");
     for (const reconciliationRecord of mockData.reconciliationRecords) {
+      // Find the corresponding account by name
+      const accountName = mockData.accounts.find(
+        (acc) => acc.account_number === reconciliationRecord.account_number
+      )?.name;
+      const accountId = accountIdMap.get(accountName);
+
+      if (!accountId) {
+        console.warn(
+          `⚠️  Account not found for reconciliation record: ${reconciliationRecord.account_id}`
+        );
+        continue;
+      }
+
       await db.query(
         `INSERT INTO reconciliation_records 
          (account_id, reconciliation_date, starting_balance, ending_balance, status, notes) 
          VALUES ($1, $2, $3, $4, $5, $6)`,
         [
-          reconciliationRecord.account_id,
+          accountId,
           reconciliationRecord.reconciliation_date,
           reconciliationRecord.starting_balance,
           reconciliationRecord.ending_balance,
@@ -99,7 +142,7 @@ const populateMockData = async () => {
         ]
       );
       console.log(
-        `✅ Created reconciliation record for account ${reconciliationRecord.account_id}`
+        `✅ Created reconciliation record for account ${accountName}`
       );
     }
 
