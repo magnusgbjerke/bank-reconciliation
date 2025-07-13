@@ -34,6 +34,14 @@ const ReconciliationPage: React.FC = () => {
     new Set()
   );
 
+  // State for multi-selection matching
+  const [selectedBankTransactions, setSelectedBankTransactions] = useState<
+    Transaction[]
+  >([]);
+  const [selectedBookTransactions, setSelectedBookTransactions] = useState<
+    Transaction[]
+  >([]);
+
   // Fetch accounts on component mount
   useEffect(() => {
     fetchAccounts();
@@ -121,6 +129,80 @@ const ReconciliationPage: React.FC = () => {
     return matchedTransactions.has(transactionId);
   };
 
+  // Multi-selection functions
+  const handleSelectBankTransaction = (transaction: Transaction) => {
+    setSelectedBankTransactions((prev) => {
+      const isSelected = prev.some((t) => t.id === transaction.id);
+      if (isSelected) {
+        return prev.filter((t) => t.id !== transaction.id);
+      } else {
+        return [...prev, transaction];
+      }
+    });
+  };
+
+  const handleSelectBookTransaction = (transaction: Transaction) => {
+    setSelectedBookTransactions((prev) => {
+      const isSelected = prev.some((t) => t.id === transaction.id);
+      if (isSelected) {
+        return prev.filter((t) => t.id !== transaction.id);
+      } else {
+        return [...prev, transaction];
+      }
+    });
+  };
+
+  const handleMatchSelectedTransactions = () => {
+    if (
+      selectedBankTransactions.length === 0 ||
+      selectedBookTransactions.length === 0
+    ) {
+      return;
+    }
+
+    // Calculate total amounts for both sides
+    const bankTotal = selectedBankTransactions.reduce((sum, trans) => {
+      const numericAmount =
+        typeof trans.amount === "string"
+          ? parseFloat(trans.amount)
+          : trans.amount;
+      const amount =
+        trans.transaction_type === "credit" ? numericAmount : -numericAmount;
+      return sum + amount;
+    }, 0);
+
+    const bookTotal = selectedBookTransactions.reduce((sum, trans) => {
+      const numericAmount =
+        typeof trans.amount === "string"
+          ? parseFloat(trans.amount)
+          : trans.amount;
+      const amount =
+        trans.transaction_type === "credit" ? numericAmount : -numericAmount;
+      return sum + amount;
+    }, 0);
+
+    if (bankTotal !== bookTotal) {
+      return;
+    }
+
+    setMatchedTransactions(
+      (prev) =>
+        new Set([
+          ...prev,
+          ...selectedBankTransactions.map((t) => t.id),
+          ...selectedBookTransactions.map((t) => t.id),
+        ])
+    );
+    toast.success("Transactions matched successfully!");
+    setSelectedBankTransactions([]);
+    setSelectedBookTransactions([]);
+  };
+
+  const handleCancelMatching = () => {
+    setSelectedBankTransactions([]);
+    setSelectedBookTransactions([]);
+  };
+
   const formatAmount = (amount: number, type: string) => {
     const formatted = new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -145,6 +227,43 @@ const ReconciliationPage: React.FC = () => {
     return "bg-white border-gray-200";
   };
 
+  // Helper functions for selection states
+  const isBankTransactionSelected = (transaction: Transaction) => {
+    return selectedBankTransactions.some((t) => t.id === transaction.id);
+  };
+
+  const isBookTransactionSelected = (transaction: Transaction) => {
+    return selectedBookTransactions.some((t) => t.id === transaction.id);
+  };
+
+  const getBankTransactionClasses = (transaction: Transaction) => {
+    let classes = "p-4 border-l-4 transition-colors cursor-pointer";
+
+    if (matchedTransactions.has(transaction.id)) {
+      classes += " bg-green-100 border-green-300 hover:bg-green-200";
+    } else if (isBankTransactionSelected(transaction)) {
+      classes += " bg-blue-100 border-blue-300 hover:bg-blue-200";
+    } else {
+      classes += " bg-white border-gray-200 hover:bg-gray-50";
+    }
+
+    return classes;
+  };
+
+  const getBookTransactionClasses = (transaction: Transaction) => {
+    let classes = "p-4 border-l-4 transition-colors cursor-pointer";
+
+    if (matchedTransactions.has(transaction.id)) {
+      classes += " bg-green-100 border-green-300 hover:bg-green-200";
+    } else if (isBookTransactionSelected(transaction)) {
+      classes += " bg-blue-100 border-blue-300 hover:bg-blue-200";
+    } else {
+      classes += " bg-white border-gray-200 hover:bg-gray-50";
+    }
+
+    return classes;
+  };
+
   return (
     <div className="p-6">
       {/* Account Selector */}
@@ -167,6 +286,58 @@ const ReconciliationPage: React.FC = () => {
             </option>
           ))}
         </select>
+      </div>
+
+      {/* Matching Controls */}
+      <div className="mb-6 bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900">
+              Matching Controls
+            </h3>
+            <p className="text-sm text-gray-600">
+              Click transactions from both sides to select and match them
+            </p>
+          </div>
+          <div className="flex space-x-3">
+            <button
+              onClick={handleMatchSelectedTransactions}
+              disabled={
+                selectedBankTransactions.length === 0 ||
+                selectedBookTransactions.length === 0
+              }
+              className="px-4 py-2 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+            >
+              Match Selected
+            </button>
+            <button
+              onClick={handleCancelMatching}
+              className="px-4 py-2 bg-gray-600 text-white rounded-md text-sm font-medium hover:bg-gray-700 transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+
+        {/* Selection Status */}
+        <div className="mt-4 p-3 bg-gray-50 rounded-md">
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <span className="font-medium">Bank Transactions Selected:</span>
+              <span className="ml-2">
+                {selectedBankTransactions.length} transaction
+                {selectedBankTransactions.length !== 1 ? "s" : ""}
+              </span>
+            </div>
+            <div>
+              <span className="font-medium">Book Transactions Selected:</span>
+              <span className="ml-2">
+                {selectedBookTransactions.length} transaction
+                {selectedBookTransactions.length !== 1 ? "s" : ""}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
 
       {loading ? (
@@ -195,9 +366,8 @@ const ReconciliationPage: React.FC = () => {
                   {bankTransactions.map((transaction) => (
                     <div
                       key={transaction.id}
-                      className={`p-4 border-l-4 ${getTransactionStatus(
-                        transaction
-                      )} hover:bg-gray-50 transition-colors`}
+                      className={getBankTransactionClasses(transaction)}
+                      onClick={() => handleSelectBankTransaction(transaction)}
                     >
                       <div className="flex justify-between items-start mb-2">
                         <div className="flex-1">
@@ -254,9 +424,8 @@ const ReconciliationPage: React.FC = () => {
                   {bookTransactions.map((transaction) => (
                     <div
                       key={transaction.id}
-                      className={`p-4 border-l-4 ${getTransactionStatus(
-                        transaction
-                      )} hover:bg-gray-50 transition-colors`}
+                      className={getBookTransactionClasses(transaction)}
+                      onClick={() => handleSelectBookTransaction(transaction)}
                     >
                       <div className="flex justify-between items-start mb-2">
                         <div className="flex-1">
