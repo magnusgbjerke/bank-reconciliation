@@ -531,7 +531,7 @@ const ReconciliationPage: React.FC = () => {
                 {bankTransactions.length} transactions
               </p>
             </div>
-            <div className="max-h-96 overflow-y-auto">
+            <div className="max-h-96">
               {bankTransactions.length === 0 ? (
                 <div className="p-6 text-center text-gray-500">
                   No bank transactions found
@@ -716,7 +716,7 @@ const ReconciliationPage: React.FC = () => {
                 {bookTransactions.length} transactions
               </p>
             </div>
-            <div className="max-h-96 overflow-y-auto">
+            <div className="max-h-96">
               {bookTransactions.length === 0 ? (
                 <div className="p-6 text-center text-gray-500">
                   No book transactions found
@@ -768,44 +768,6 @@ const ReconciliationPage: React.FC = () => {
           </div>
         </div>
       )}
-
-      {/* Summary */}
-      {!loading &&
-        (bankTransactions.length > 0 || bookTransactions.length > 0) && (
-          <div className="mt-6 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Reconciliation Summary
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-blue-600">
-                  {bankTransactions.length}
-                </p>
-                <p className="text-sm text-gray-600">Bank Transactions</p>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold text-green-600">
-                  {bookTransactions.length}
-                </p>
-                <p className="text-sm text-gray-600">Book Transactions</p>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold text-purple-600">
-                  {matchedTransactions.size / 2}
-                </p>
-                <p className="text-sm text-gray-600">Matched Pairs</p>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold text-orange-600">
-                  {bankTransactions.length +
-                    bookTransactions.length -
-                    matchedTransactions.size}
-                </p>
-                <p className="text-sm text-gray-600">Unmatched</p>
-              </div>
-            </div>
-          </div>
-        )}
     </div>
   );
 };
