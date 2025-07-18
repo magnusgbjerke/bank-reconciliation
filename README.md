@@ -8,7 +8,6 @@ A modern, full-stack bank reconciliation application built with Node.js, Express
 - 💰 **Transaction Management** - Add, edit, and import transactions
 - 🔄 **Bank Reconciliation** - Match bank and book transactions
 - 📊 **Dashboard & Analytics** - Visual insights and reporting
-- 📁 **File Import** - Import transactions from CSV/Excel files
 - 🎯 **Auto-Matching** - Intelligent transaction matching algorithms
 - 📱 **Responsive Design** - Works on desktop and mobile devices
 
@@ -19,7 +18,6 @@ A modern, full-stack bank reconciliation application built with Node.js, Express
 - **Node.js** - Runtime environment
 - **Express.js** - Web framework
 - **PostgreSQL** - Database
-- **Multer** - File upload handling
 - **Joi** - Data validation
 - **Helmet** - Security middleware
 
@@ -56,9 +54,6 @@ A modern, full-stack bank reconciliation application built with Node.js, Express
    # Install all dependencies (recommended)
    npm run install:all
 
-   # If you encounter dependency conflicts, run:
-   npm run fix-deps
-
    # Or install manually:
    npm install
    cd client
@@ -82,9 +77,6 @@ A modern, full-stack bank reconciliation application built with Node.js, Express
    -- Create the database
    CREATE DATABASE bank_reconciliation;
 
-   -- Create a user (optional)
-   CREATE USER bank_user WITH PASSWORD 'your_password';
-   GRANT ALL PRIVILEGES ON DATABASE bank_reconciliation TO bank_user;
    ```
 
 5. **Update environment variables**

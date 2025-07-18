@@ -5,7 +5,6 @@ import { useAccounts } from "./hooks/useAccounts";
 import { useTransactions } from "./hooks/useTransactions";
 import { useConnectionLines } from "./hooks/useConnectionLines";
 import { AccountSelector } from "./components/AccountSelector";
-import { MatchingControls } from "./components/MatchingControls";
 import { ConnectionLines } from "./components/ConnectionLines";
 import { TransactionList } from "./components/TransactionList";
 import { MiddleStatusBox } from "./components/MiddleStatusBox";
@@ -123,13 +122,6 @@ const ReconciliationPage: React.FC = () => {
         onAccountChange={setSelectedAccount}
       />
 
-      <MatchingControls
-        selectedBankTransactions={selectedBankTransactions}
-        selectedBookTransactions={selectedBookTransactions}
-        onMatchSelected={handleMatchSelectedTransactions}
-        onCancelMatching={handleCancelMatching}
-      />
-
       <div
         className="grid grid-cols-1 lg:grid-cols-3 gap-6 relative"
         id="reconciliation-grid"
@@ -149,6 +141,8 @@ const ReconciliationPage: React.FC = () => {
           selectedBankTransactions={selectedBankTransactions}
           selectedBookTransactions={selectedBookTransactions}
           middleBoxRef={middleBoxRef}
+          onMatchSelected={handleMatchSelectedTransactions}
+          onCancelMatching={handleCancelMatching}
         />
 
         <TransactionList

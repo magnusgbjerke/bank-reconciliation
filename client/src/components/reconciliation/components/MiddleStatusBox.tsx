@@ -5,12 +5,16 @@ interface MiddleStatusBoxProps {
   selectedBankTransactions: Transaction[];
   selectedBookTransactions: Transaction[];
   middleBoxRef: React.RefObject<HTMLDivElement>;
+  onMatchSelected: () => void;
+  onCancelMatching: () => void;
 }
 
 export const MiddleStatusBox: React.FC<MiddleStatusBoxProps> = ({
   selectedBankTransactions,
   selectedBookTransactions,
   middleBoxRef,
+  onMatchSelected,
+  onCancelMatching,
 }) => {
   const calculateTotals = () => {
     const bankTotal = selectedBankTransactions.reduce((sum, trans) => {
@@ -36,6 +40,8 @@ export const MiddleStatusBox: React.FC<MiddleStatusBoxProps> = ({
     return { bankTotal, bookTotal, canMatch: bankTotal === bookTotal };
   };
 
+  const { canMatch: amountsMatch } = calculateTotals();
+
   return (
     <div className="hidden lg:flex flex-col items-center justify-center">
       <div
@@ -45,7 +51,7 @@ export const MiddleStatusBox: React.FC<MiddleStatusBoxProps> = ({
         {selectedBankTransactions.length > 0 &&
         selectedBookTransactions.length > 0 ? (
           (() => {
-            const { bankTotal, bookTotal, canMatch } = calculateTotals();
+            const { canMatch } = calculateTotals();
             return (
               <div className="text-center">
                 <div
@@ -87,16 +93,22 @@ export const MiddleStatusBox: React.FC<MiddleStatusBoxProps> = ({
                     </svg>
                   )}
                 </div>
-                <div
-                  className={`text-lg font-semibold mb-2 ${
-                    canMatch ? "text-green-700" : "text-red-700"
-                  }`}
-                >
-                  {canMatch ? "Ready to Match" : "Amounts Don't Match"}
-                </div>
-                <div className="text-sm text-gray-600">
-                  {selectedBankTransactions.length} bank +{" "}
-                  {selectedBookTransactions.length} book
+
+                {/* Match and Cancel Buttons */}
+                <div className="flex flex-col space-y-2">
+                  <button
+                    onClick={onMatchSelected}
+                    disabled={!canMatch || !amountsMatch}
+                    className="px-4 py-2 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Match Selected
+                  </button>
+                  <button
+                    onClick={onCancelMatching}
+                    className="px-3 py-2 bg-gray-600 text-white rounded-md text-sm font-medium hover:bg-gray-700 transition-colors"
+                  >
+                    Cancel
+                  </button>
                 </div>
               </div>
             );
