@@ -2,6 +2,10 @@
 
 A modern, full-stack bank reconciliation application built with Node.js, Express, PostgreSQL, and React with TypeScript.
 
+<p align="center">
+  <img src="https://github.com/magnusgbjerke/bank-reconciliation/blob/main/bank-reconciliation-preview.gif" alt="bank-reconciliation-preview"/>
+</p>
+
 ## Features
 
 - 🏦 **Account Management** - Create and manage multiple bank accounts
